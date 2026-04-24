@@ -6,8 +6,8 @@
   --bg-input: #1f232b;
   --text-main: #f1f5f9;
   --text-muted: #94a3b8;
-  --accent: #3b82f6;
-  --accent-hover: #2563eb;
+  --accent: #863bff;
+  --accent-hover: #7e14ff;
   --border: #2a2f3a;
   --success: #10b981;
   --warning: #f59e0b;
@@ -121,4 +121,53 @@ body {
 
 .code-font {
   font-family: 'JetBrains Mono', monospace;
+}
+
+/* Responsive Design */
+@media (max-width: 900px) {
+  .workspace {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    height: 50%;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .main-editor {
+    height: 50%;
+  }
+
+  .top-nav {
+    padding: 0 1rem;
+    height: auto;
+    min-height: 60px;
+    padding: 0.75rem 1rem;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .nav-subtitle {
+    display: none;
+  }
+
+  .template-selector {
+    margin-right: 0 !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .nav-title span:nth-child(1) {
+    font-size: 1rem;
+  }
+  
+  .sidebar {
+    height: 60%;
+  }
+  
+  .main-editor {
+    height: 40%;
+  }
 }

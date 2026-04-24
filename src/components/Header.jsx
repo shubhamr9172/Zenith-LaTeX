@@ -26,8 +26,8 @@ function Header({ apiKey, setApiKey, setLatexCode, setOriginalCode }) {
       <div className="nav-title">
         <FileCode2 size={24} color="var(--accent)" />
         <div style={{ display: 'flex', flexDirection: 'column' }}>
-          <span>LaTeX AI Architect</span>
-          <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)', fontWeight: '400', marginTop: '-2px' }}>
+          <span>Zenith-LaTeX</span>
+          <span className="nav-subtitle" style={{ fontSize: '0.65rem', color: 'var(--text-muted)', fontWeight: '400', marginTop: '-2px' }}>
             Created by Shubham Reddy
           </span>
         </div>

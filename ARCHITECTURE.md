@@ -1,6 +1,6 @@
-# System Design & Architecture: LaTeX AI Architect
+# System Design & Architecture: Zenith-LaTeX
 
-This document outlines the technical architecture, data flow, and design patterns used in the **LaTeX AI Architect** application.
+This document outlines the technical architecture, data flow, and design patterns used in the **Zenith-LaTeX** application.
 
 ---
 
@@ -88,4 +88,4 @@ The app leverages `@monaco-editor/react` to provide a dual-pane diffing experien
 
 ---
 **Created by Shubham Reddy**
-*System Design Document for LaTeX AI Architect*
+*System Design Document for Zenith-LaTeX*

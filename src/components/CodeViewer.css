@@ -130,3 +130,45 @@
   font-size: 0.85rem;
   color: var(--text-muted);
 }
+
+@media (max-width: 900px) {
+  .code-header {
+    height: auto;
+    flex-direction: column;
+    padding: 0.75rem;
+    gap: 0.75rem;
+    align-items: flex-start;
+  }
+
+  .tabs {
+    width: 100%;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .tab {
+    padding: 0.75rem 1rem;
+    flex: 1;
+    justify-content: center;
+  }
+
+  .actions {
+    width: 100%;
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 480px) {
+  .actions {
+    gap: 0.5rem;
+  }
+  
+  .btn.icon-text {
+    padding: 0.4rem 0.5rem;
+    font-size: 0.75rem;
+  }
+  
+  .btn.icon-text span {
+    display: none; /* Hide text, keep icon */
+  }
+}

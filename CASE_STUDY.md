@@ -1,4 +1,4 @@
-# Case Study: LaTeX AI Resume Updater
+# Case Study: Zenith-LaTeX
 
 ## 1. Project Inception & Goal
 The objective was to build a professional, web-based LaTeX resume application. Unlike standard resume builders, this project aimed to leverage the **Gemini API** as an "AI Architect," allowing users to paste raw LaTeX code and describe their updates in natural language. The AI would then return perfectly formatted, updated LaTeX code. The ultimate goal was to create a zero-cost, globally deployable SaaS application.
@@ -36,7 +36,7 @@ To ensure our user base maximizes their hiring potential, we addressed the issue
 * **The Impact:** Now, regardless of how poorly a user writes their initial prompt, the AI forces the output into a highly-hirable, corporate-standard format.
 
 ## Conclusion
-The **LaTeX AI Resume Updater** evolved from a buggy prototype into a highly robust, fully "serverless" application. By leveraging intelligent browser workarounds (hidden forms, CSS toggling, localStorage) and strict AI prompting, the app achieves enterprise-level functionality with absolute zero backend maintenance costs. It is fully ready for global deployment on platforms like Vercel or Netlify.
+The **Zenith-LaTeX** evolved from a buggy prototype into a highly robust, fully "serverless" application. By leveraging intelligent browser workarounds (hidden forms, CSS toggling, localStorage) and strict AI prompting, the app achieves enterprise-level functionality with absolute zero backend maintenance costs. It is fully ready for global deployment on platforms like Vercel or Netlify.
 
 ## 6. Value Proposition: Why not just use ChatGPT?
 An interviewer might ask: *"Why build this when I can just paste code into ChatGPT?"* 

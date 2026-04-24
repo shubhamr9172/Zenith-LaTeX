@@ -89,3 +89,9 @@
   justify-content: flex-end;
   gap: 1rem;
 }
+@media (max-width: 500px) {
+  .modal-content {
+    margin: 1rem;
+    max-width: calc(100% - 2rem);
+  }
+}

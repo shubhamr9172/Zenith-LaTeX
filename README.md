@@ -1,6 +1,6 @@
-# LaTeX AI Architect 🚀
+# Zenith-LaTeX 🚀
 
-**LaTeX AI Architect** is a premium, web-based resume builder designed to help job seekers create perfectly formatted, ATS-compliant LaTeX resumes using Artificial Intelligence.
+**Zenith-LaTeX** is a premium, web-based resume builder designed to help job seekers create perfectly formatted, ATS-compliant LaTeX resumes using Artificial Intelligence.
 
 Created by **Shubham Reddy**, this tool acts as an "AI Architect" that takes your raw LaTeX code and user prompts to generate professional, high-impact resume updates instantly.
 

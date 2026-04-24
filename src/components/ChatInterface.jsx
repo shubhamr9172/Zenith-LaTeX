@@ -4,7 +4,7 @@ import './ChatInterface.css';
 
 function ChatInterface({ apiKey, latexCode, setLatexCode, setOriginalCode }) {
   const defaultMessages = [
-    { role: 'model', content: "Hello! I am your LaTeX AI Architect. Paste your code on the right, and tell me what you'd like to update." }
+    { role: 'model', content: "Hello! I am Zenith-LaTeX. Paste your code on the right, and tell me what you'd like to update." }
   ];
   
   const [messages, setMessages] = useState(() => {
@@ -64,7 +64,7 @@ function ChatInterface({ apiKey, latexCode, setLatexCode, setOriginalCode }) {
         body: JSON.stringify({
           system_instruction: {
             parts: [{
-              text: `You are the LaTeX Resume AI Architect. 
+              text: `You are Zenith-LaTeX, the expert AI Resume Architect. 
 Your goal is to parse the user's LaTeX resume code and output the EXACT UPDATED LaTeX code based on their request.
 CRITICAL INSTRUCTIONS:
 1. ONLY output valid LaTeX code.

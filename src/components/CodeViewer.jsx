@@ -133,6 +133,7 @@ function CodeViewer({ latexCode, setLatexCode, originalCode, setOriginalCode }) 
                 fontFamily: "'JetBrains Mono', monospace",
                 fontSize: 14,
                 ignoreTrimWhitespace: false,
+                automaticLayout: true,
               }}
             />
           ) : (
@@ -147,6 +148,7 @@ function CodeViewer({ latexCode, setLatexCode, originalCode, setOriginalCode }) 
                 wordWrap: 'on',
                 fontFamily: "'JetBrains Mono', monospace",
                 fontSize: 14,
+                automaticLayout: true,
               }}
             />
           )}

@@ -1,6 +1,6 @@
-# Interview Preparation Guide: LaTeX AI Architect
+# Interview Preparation Guide: Zenith-LaTeX
 
-This document serves as a comprehensive guide to help you explain the technical and strategic aspects of the **LaTeX AI Architect** project during interviews.
+This document serves as a comprehensive guide to help you explain the technical and strategic aspects of the **Zenith-LaTeX** project during interviews.
 
 ---
 
@@ -71,4 +71,4 @@ This document serves as a comprehensive guide to help you explain the technical 
 
 ---
 **Created by Shubham Reddy**
-*Interview Guide for LaTeX AI Architect*
+*Interview Guide for Zenith-LaTeX*
