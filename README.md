@@ -6,13 +6,20 @@ Created by **Shubham Reddy**, this tool acts as an "AI Architect" that takes you
 
 ## ✨ Key Features
 
-- 🧠 **AI-Powered Updates:** Integrated with Google Gemini to handle complex LaTeX editing through natural language.
-- 🔍 **Monaco Diff Viewer:** A professional-grade side-by-side code comparison tool to review AI suggestions before accepting them.
-- 📄 **Live PDF Preview:** Instant LaTeX-to-PDF compilation using a robust, serverless architecture.
-- 📥 **One-Click Downloads:** Download your compiled PDF directly from the browser.
-- 💾 **Auto-Save:** Your code and chat history are automatically persisted to your browser's local storage.
-- 🎯 **ATS-Optimized:** AI prompts are hardcoded to enforce global hiring standards like the STAR method and strong Action Verbs.
-- 📚 **Template Library:** Choose from a selection of premium, globally accepted LaTeX resume templates.
+- 🧠 **AI-Powered Updates:** Integrated with Google Gemini and NVIDIA Gemma to handle complex LaTeX editing.
+- ⚡ **Turbo Mode:** Near-instant suggestions and grammar fixes powered by NVIDIA's Gemma 2 2B.
+- 🔍 **Monaco Diff Viewer:** A professional-grade code comparison tool with **Accept/Discard** functionality.
+- 📄 **Live PDF Preview:** Instant LaTeX-to-PDF compilation directly in the browser.
+- 🎯 **ATS-Optimized:** AI prompts enforce global hiring standards like the STAR method and Action Verbs.
+- 💾 **Safe History:** Your data stays in your browser; never on a server.
+
+## 📂 Project Documentation
+For a deep dive into the technical and product details, see:
+- **[PRD (Product Requirements Document)](./PRD.md)**: Goals, features, and target audience.
+- **[Implementation Plan](./IMPLEMENTATION_PLAN.md)**: How the features were built.
+- **[AI Instructions & Logic](./AI_INSTRUCTIONS.md)**: The "brain" of Zenith-LaTeX.
+- **[Tech Stack](./TECH_STACK.md)**: Technologies and architectural decisions.
+- **[System Architecture](./ARCHITECTURE.md)**: High-level design and diagrams.
 
 ## 🚀 How to Use
 

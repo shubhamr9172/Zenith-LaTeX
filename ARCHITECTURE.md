@@ -10,7 +10,7 @@ The application is a **Client-Side Heavy, Serverless Web App**. It is designed t
 ### Tech Stack:
 - **UI Framework:** React (Vite)
 - **Editor:** Monaco Editor (@monaco-editor/react)
-- **AI Engine:** Google Gemini Pro API (REST)
+- **AI Engine:** Google Gemini (2.5/3.1) & NVIDIA NIM (Gemma 2)
 - **LaTeX Engine:** TeXLive.net (CGI/Form POST)
 - **Styling:** Vanilla CSS (Glassmorphism design)
 

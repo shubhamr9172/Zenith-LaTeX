@@ -35,7 +35,7 @@
 }
 
 .model .message-avatar {
-  background-color: rgba(59, 130, 246, 0.2);
+  background-color: rgba(16, 185, 129, 0.2);
   color: var(--accent);
 }
 
@@ -143,4 +143,40 @@
 .action-chip:hover {
   background-color: rgba(255, 255, 255, 0.08);
   border-color: var(--text-muted);
+}
+.usage-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 1.25rem;
+  background-color: rgba(255, 255, 255, 0.03);
+  border-top: 1px solid var(--border);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.usage-item {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.usage-icon {
+  color: var(--accent);
+}
+
+.usage-item strong {
+  color: var(--text-main);
+  font-weight: 600;
+}
+
+.usage-item.total {
+  opacity: 0.8;
+}
+
+@media (max-width: 480px) {
+  .usage-bar {
+    padding: 0.4rem 0.75rem;
+    font-size: 0.7rem;
+  }
 }

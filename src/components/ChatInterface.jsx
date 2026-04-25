@@ -1,20 +1,53 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, Bot, User, Loader2 } from 'lucide-react';
+import { Send, Bot, User, Loader2, Zap, Clock } from 'lucide-react';
 import './ChatInterface.css';
 
-function ChatInterface({ apiKey, latexCode, setLatexCode, setOriginalCode }) {
+function ChatInterface({ apiKey, nvidiaApiKey, selectedModel, apiVersion, latexCode, setLatexCode, setOriginalCode }) {
   const defaultMessages = [
     { role: 'model', content: "Hello! I am Zenith-LaTeX. Paste your code on the right, and tell me what you'd like to update." }
   ];
+
+  const systemPrompt = `You are Zenith-LaTeX, a headless LaTeX transformation engine.
+Your output is piped DIRECTLY into a .tex compiler. 
+CRITICAL RULES:
+1. ONLY output valid LaTeX code.
+2. DO NOT include ANY conversational text, explanations, or 'Here is your code' style markers.
+3. If the user asks a question that doesn't require code changes, still return the FULL LaTeX code with the answer embedded as a LaTeX comment if necessary.
+4. You MUST return the ENTIRE LaTeX document from \\documentclass to \\end{document} every time. Never output snippets.
+5. Any text outside of LaTeX commands will cause a CRITICAL SYSTEM FAILURE. Silence is mandatory; only code is allowed.`;
   
   const [messages, setMessages] = useState(() => {
     const saved = localStorage.getItem('chatMessages');
     return saved ? JSON.parse(saved) : defaultMessages;
   });
+
+  const [usageStats, setUsageStats] = useState({
+    total: 0,
+    prompt: 0,
+    completion: 0,
+    requests: 0
+  });
+
+  const [resetTime, setResetTime] = useState(60);
+  const [windowRequests, setWindowRequests] = useState(0);
   
   useEffect(() => {
     localStorage.setItem('chatMessages', JSON.stringify(messages));
   }, [messages]);
+
+  // Quota Reset Timer Logic
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setResetTime((prev) => {
+        if (prev <= 1) {
+          setWindowRequests(0); // Reset window counter every 60s
+          return 60;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
 
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -33,8 +66,16 @@ function ChatInterface({ apiKey, latexCode, setLatexCode, setOriginalCode }) {
     const textToSend = customText || input;
     if (!textToSend.trim() || isLoading) return;
 
-    if (!apiKey) {
-      alert("Please set your Gemini API key in the settings first.");
+    // Soft Rate Limit Warning (Option A)
+    if (windowRequests >= 10) {
+      showToast("Warning: 10+ requests sent this minute. Manage your quota carefully!", "error");
+    }
+
+    const isNvidia = selectedModel.startsWith('google/gemma');
+    const currentApiKey = isNvidia ? nvidiaApiKey : apiKey;
+
+    if (!currentApiKey) {
+      alert(`Please set your ${isNvidia ? 'NVIDIA' : 'Gemini'} API key in the settings first.`);
       return;
     }
 
@@ -44,66 +85,100 @@ function ChatInterface({ apiKey, latexCode, setLatexCode, setOriginalCode }) {
     setIsLoading(true);
 
     try {
-      // Build conversation history, skipping the hardcoded initial greeting
-      const apiMessages = messages
-        .filter((_, idx) => idx > 0) 
-        .map(m => ({
+      let newCode = '';
+      const recentMessages = messages.slice(-4);
+      
+      if (isNvidia) {
+        // NVIDIA / OpenAI Format
+        const apiMessages = [
+          { role: 'system', content: systemPrompt },
+          ...recentMessages.map(m => ({ role: m.role === 'model' ? 'assistant' : 'user', content: m.content })),
+          { role: 'user', content: `CONTEXT: Current LaTeX Source Code:\n\n${latexCode}\n\nUSER REQUEST: ${userMessage.content}` }
+        ];
+
+        const response = await fetch("https://integrate.api.nvidia.com/v1/chat/completions", {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${nvidiaApiKey}`
+          },
+          body: JSON.stringify({
+            model: selectedModel,
+            messages: apiMessages,
+            temperature: 0.2,
+            top_p: 0.7,
+            max_tokens: 4096
+          })
+        });
+
+        const data = await response.json();
+        if (data.error) throw new Error(data.error.message || "NVIDIA API Error");
+        newCode = data.choices[0].message.content;
+        
+        setWindowRequests(prev => prev + 1);
+        // Mock usage metadata for NVIDIA
+        setUsageStats(prev => ({ ...prev, total: prev.total + (data.usage?.total_tokens || 0), requests: prev.requests + 1 }));
+
+      } else {
+        // Google Gemini Format
+        const apiMessages = recentMessages.map(m => ({
           role: m.role,
           parts: [{ text: m.content }]
         }));
 
-      // Append the current turn with the current LaTeX state
-      apiMessages.push({
-        role: 'user',
-        parts: [{ text: `Current LaTeX Code:\n${latexCode}\n\nUser Request: ${userMessage.content}` }]
-      });
+        apiMessages.push({
+          role: 'user',
+          parts: [{ text: `CONTEXT: Current LaTeX Source Code:\n\n${latexCode}\n\nUSER REQUEST: ${userMessage.content}` }]
+        });
 
-      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${apiKey}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          system_instruction: {
-            parts: [{
-              text: `You are Zenith-LaTeX, the expert AI Resume Architect. 
-Your goal is to parse the user's LaTeX resume code and output the EXACT UPDATED LaTeX code based on their request.
-CRITICAL INSTRUCTIONS:
-1. ONLY output valid LaTeX code.
-2. DO NOT output markdown formatting like \`\`\`latex. 
-3. DO NOT output conversational filler. Just the code.
-4. Keep the exact same structure, preamble, and styling of the original code, only modifying what is requested.
-5. When generating or editing resume bullet points, ALWAYS prioritize ATS compatibility: use strong Action Verbs, follow the STAR method (Situation, Task, Action, Result), and quantify achievements.`
-            }]
-          },
-          contents: apiMessages
-        })
-      });
+        const url = `https://generativelanguage.googleapis.com/${apiVersion}/models/${selectedModel}:generateContent?key=${apiKey}`;
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            system_instruction: { parts: [{ text: systemPrompt }] },
+            contents: apiMessages
+          })
+        });
 
-      const data = await response.json();
+        const data = await response.json();
+        if (data.error) throw new Error(data.error.message);
+        
+        setWindowRequests(prev => prev + 1);
+        if (data.usageMetadata) {
+          setUsageStats(prev => ({
+            total: prev.total + data.usageMetadata.totalTokenCount,
+            prompt: data.usageMetadata.promptTokenCount,
+            completion: data.usageMetadata.candidatesTokenCount,
+            requests: prev.requests + 1
+          }));
+        }
+
+        const candidate = data.candidates?.[0];
+        if (candidate?.finishReason === 'SAFETY') throw new Error("Blocked by safety filters.");
+        newCode = candidate?.content?.parts?.[0]?.text;
+      }
+
+      if (!newCode) throw new Error("The AI returned an empty response.");
       
-      if (data.error) {
-        throw new Error(data.error.message);
-      }
+      // Clean potential markdown formatting
+      const cleanedOutput = newCode.replace(/```[a-zA-Z]*\n?/g, '').replace(/```/g, '').trim();
 
-      const candidate = data.candidates?.[0];
-      if (!candidate) {
-        throw new Error("No response generated from the AI.");
-      }
-
-      if (candidate.finishReason === 'SAFETY') {
-        throw new Error("Generation blocked due to safety filters.");
-      }
-
-      let newCode = candidate.content?.parts?.[0]?.text;
-      if (!newCode) {
-        throw new Error("The AI returned an empty or invalid response.");
-      }
+      // SAFETY VALVE: Check if the AI sent code or just chatter
+      // We look for common LaTeX markers to confirm it's actually code
+      const hasLatexMarkers = cleanedOutput.includes('\\documentclass') || 
+                               cleanedOutput.includes('\\begin{document}') || 
+                               cleanedOutput.includes('\\section') ||
+                               cleanedOutput.includes('\\item');
       
-      // Robustly clean up markdown wrappers and trailing whitespace
-      newCode = newCode.replace(/```[a-zA-Z]*\n?/g, '').replace(/```/g, '').trim();
-
-      setOriginalCode(latexCode);
-      setLatexCode(newCode);
-      setMessages(prev => [...prev, { role: 'model', content: "I've updated the LaTeX code. Please review the highlighted changes on the right." }]);
+      if (hasLatexMarkers) {
+        setOriginalCode(latexCode);
+        setLatexCode(cleanedOutput);
+        setMessages(prev => [...prev, { role: 'model', content: "I've updated the LaTeX code. Review the changes on the right." }]);
+      } else {
+        // AI sent conversational text instead of code
+        setMessages(prev => [...prev, { role: 'model', content: cleanedOutput }]);
+      }
 
     } catch (error) {
       console.error(error);
@@ -154,6 +229,40 @@ CRITICAL INSTRUCTIONS:
             {action.label}
           </button>
         ))}
+        <button 
+          className="action-chip" 
+          style={{ marginLeft: 'auto', background: 'transparent', border: '1px solid var(--border)', color: 'var(--text-muted)' }}
+          onClick={() => {
+            setMessages(defaultMessages);
+            localStorage.removeItem('chatMessages');
+            showToast('Chat history cleared.');
+          }}
+          disabled={isLoading}
+        >
+          Clear Chat
+        </button>
+      </div>
+
+      <div className="usage-bar">
+        <div className="usage-item" title="Current AI Model">
+          <Bot size={12} className="usage-icon" />
+          <span><strong>{selectedModel}</strong></span>
+        </div>
+        <div className="usage-item" title="Tokens sent in latest request">
+          <Zap size={12} className="usage-icon" />
+          <span>In Tokens: <strong>{usageStats.prompt}</strong></span>
+        </div>
+        <div className="usage-item" title="Tokens received in latest response">
+          <Bot size={12} className="usage-icon" />
+          <span>Out Tokens: <strong>{usageStats.completion}</strong></span>
+        </div>
+        <div className="usage-item">
+          <Clock size={12} className="usage-icon" />
+          <span>Reset: <strong>{resetTime}s</strong></span>
+        </div>
+        <div className="usage-item total" onClick={() => setUsageStats({ total: 0, prompt: 0, completion: 0, requests: 0 })} style={{ cursor: 'pointer' }} title="Total tokens used this session (Click to reset)">
+          <span>Session Tokens: <strong>{usageStats.total.toLocaleString()}</strong></span>
+        </div>
       </div>
 
       <form className="chat-input-area" onSubmit={(e) => handleSend(e)}>

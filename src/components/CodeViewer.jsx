@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Editor, DiffEditor } from '@monaco-editor/react';
-import { Copy, Check, Columns, LayoutList, CheckCircle2, Play, Loader2, Download } from 'lucide-react';
+import { Copy, Check, Columns, LayoutList, CheckCircle2, XCircle, Play, Loader2, Download } from 'lucide-react';
 import './CodeViewer.css';
 
 function CodeViewer({ latexCode, setLatexCode, originalCode, setOriginalCode }) {
@@ -23,6 +23,12 @@ function CodeViewer({ latexCode, setLatexCode, originalCode, setOriginalCode }) 
     setOriginalCode(latexCode);
   };
 
+  const handleDiscardChanges = () => {
+    if (confirm("Revert changes? This will discard the AI's current edits.")) {
+      setLatexCode(originalCode);
+    }
+  };
+
   const handleEditorChange = (value) => {
     setLatexCode(value || '');
   };
@@ -30,27 +36,17 @@ function CodeViewer({ latexCode, setLatexCode, originalCode, setOriginalCode }) 
   const compilePdf = () => {
     setIsCompiling(true);
     setCompileError(null);
-    
-    // Instead of using fetch (which gets blocked by CORS), we use a hidden HTML form
-    // to POST directly to the server, and set its target to our iframe.
     setTimeout(() => {
       const form = document.getElementById('latex-form');
-      if (form) {
-        form.submit();
-      }
-      
-      // We can't know exactly when the iframe finishes loading because of cross-origin security,
-      // but we can assume it takes a few seconds and hide the spinner.
+      if (form) form.submit();
       setTimeout(() => setIsCompiling(false), 3000);
-      setPdfUrl('loading'); // Just a flag to show the iframe
+      setPdfUrl('loading');
     }, 100);
   };
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
-    if (tab === 'pdf' && !pdfUrl) {
-      compilePdf();
-    }
+    if (tab === 'pdf' && !pdfUrl) compilePdf();
   };
 
   return (
@@ -84,7 +80,10 @@ function CodeViewer({ latexCode, setLatexCode, originalCode, setOriginalCode }) 
                     {isSideBySide ? <LayoutList size={18} /> : <Columns size={18} />}
                   </button>
                   <button className="btn success icon-text" onClick={handleAcceptChanges}>
-                    <CheckCircle2 size={16} /> Accept Changes
+                    <CheckCircle2 size={16} /> Accept
+                  </button>
+                  <button className="btn danger icon-text" onClick={handleDiscardChanges}>
+                    <XCircle size={16} /> Discard
                   </button>
                   <div className="divider" />
                 </>
